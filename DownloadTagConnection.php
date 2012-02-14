@@ -27,6 +27,7 @@ class DownloadTagConnection extends Record {
 		$having = isset($args['having']) ? trim($args['having']) : '';
 
 		// Prepare query parts
+		$where_string = "downloads.active = 1 AND (downloads.expires > '" . date("Y-m-d") . "' OR downloads.expires IS NULL) AND " . $where;
 		$order_by_string = empty($order_by) ? '' : "ORDER BY $order_by";
 		$group_by_string = empty($group_by) ? '' : "GROUP BY $group_by";
 		$having_string = empty($having) ? '' : "HAVING $having";
@@ -41,7 +42,7 @@ class DownloadTagConnection extends Record {
 		$sql = "SELECT downloads_tags.*, downloads.*, downloadtags.name AS tag FROM $tablename AS downloads_tags "
 			. "LEFT JOIN $tablename_downloads AS downloads ON downloads.id=downloads_tags.download_id "
 			. "LEFT JOIN $tablename_tags AS downloadtags ON downloadtags.id=downloads_tags.tag_id "
-			. "WHERE $where $group_by_string $having_string $order_by_string $limit_string $offset_string";
+			. "WHERE $where_string $group_by_string $having_string $order_by_string $limit_string $offset_string";
 
 		$stmt = self::$__CONN__->prepare($sql);
 		$stmt->execute();
